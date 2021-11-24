@@ -5,7 +5,7 @@ const asyncHandler = require('../middleware/async');
 const ErrorResponse = require('../utils/errorResponse');
 
 //@route    POST /api/v1/claimant/
-//@desc     Save new movie to the database
+//@desc     Save new claimant to the database
 //@access   private
 exports.addClaimant = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user;

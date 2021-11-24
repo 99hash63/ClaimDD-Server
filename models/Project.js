@@ -20,6 +20,7 @@ const projectSchema = new mongoose.Schema({
 		ref: 'claimant',
 	},
 
+	//SET
 	dateFormat: {
 		type: String,
 	},
@@ -27,6 +28,15 @@ const projectSchema = new mongoose.Schema({
 		type: String,
 	},
 	decimalDisplay: {
+		type: String,
+	},
+	contractAs: {
+		type: String,
+	},
+	claimantAs: {
+		type: String,
+	},
+	defendantAs: {
 		type: String,
 	},
 });

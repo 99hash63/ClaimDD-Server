@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 
 const contractParticularSchema = new mongoose.Schema({
+	//set in dashboard
+
 	nameOfDefendant: {
 		type: String,
 	},

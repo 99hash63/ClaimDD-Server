@@ -11,8 +11,9 @@ const {
 const Project = require('../models/Project');
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
+const { getDefaultProject } = require('../middleware/getDefaultProject');
 
-router.route('/').post(protect, addContractParticular);
+router.route('/').post(protect, getDefaultProject, addContractParticular);
 
 router.route('/projectID/:id').get(protect, getContractParticulars);
 

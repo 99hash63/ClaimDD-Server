@@ -6,19 +6,35 @@ const ErrorResponse = require('../utils/errorResponse');
 const Project = require('../models/Project');
 
 //@route    POST /api/v1/contractParticular/
-//@desc     Save new movie to the database
+//@desc     Save new contract particular to the database or updating the existing one
 //@access   private
 exports.addContractParticular = asyncHandler(async (req, res, next) => {
-	//verifying that claimant exists in the db
+	req.body.project = req.defaultProject;
+	//verifying that project exists in the db
 	const project = await Project.findById(req.body.project);
 
 	if (project == null) {
 		return next(new ErrorResponse('This project does not exists!', 400));
 	}
+
 	req.body.user = req.user;
-	const newContractParticular = new ContractParticular(req.body);
-	await newContractParticular.save();
-	res.status(200).json({ success: true, msg: 'contractParticular Added' });
+
+	//checking whether a contract particular document for this specific project already exists in the db
+	const existingContractParticular = await ContractParticular.findOne({
+		project: req.body.project,
+	});
+
+	if (existingContractParticular) {
+		await ContractParticular.findByIdAndUpdate(
+			existingContractParticular._id,
+			req.body
+		);
+		res.status(200).json({ success: true, msg: 'contractParticular Updated' });
+	} else {
+		const newContractParticular = new ContractParticular(req.body);
+		await newContractParticular.save();
+		res.status(200).json({ success: true, msg: 'contractParticular Added' });
+	}
 });
 
 //@desc Get specific project's contractParticulars
