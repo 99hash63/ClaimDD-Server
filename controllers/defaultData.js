@@ -63,6 +63,11 @@ exports.getDefaultData = asyncHandler(async (req, res, next) => {
 exports.removeDefaultProject = asyncHandler(async (req, res, next) => {
 	req.body.user = req.user;
 
+	const exists = await DefaultData.findOne({ projectID: { $exists: true } });
+	if (exists == null) {
+		return res.status(400).json({ success: true, msg: 'no default project' });
+	}
+
 	const defaultData = await DefaultData.findOne({ user: req.body.user });
 
 	if (defaultData) {
