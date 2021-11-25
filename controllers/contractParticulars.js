@@ -45,7 +45,7 @@ exports.getContractParticulars = asyncHandler(async (req, res, next) => {
 
 	const contractParticulars = await ContractParticular.findOne({ project });
 
-	if (contractParticulars.length === 0) {
+	if (!contractParticulars) {
 		return next(
 			new ErrorResponse(
 				'This project does not have any contractParticulars',

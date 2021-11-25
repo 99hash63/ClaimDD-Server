@@ -10,26 +10,42 @@ const Project = require('../models/Project');
 //@access   private
 exports.addFinancialParticular = asyncHandler(async (req, res, next) => {
 	//verifying that claimant exists in the db
+	req.body.project = req.defaultProject;
+
 	const project = await Project.findById(req.body.project);
 
 	if (project == null) {
 		return next(new ErrorResponse('This project does not exists!', 400));
 	}
 	req.body.user = req.user;
-	const newFinancialParticular = new FinancialParticular(req.body);
-	await newFinancialParticular.save();
-	res.status(200).json({ success: true, msg: 'financialParticular Added' });
+
+	//checking whether a financial particular document for this specific project already exists in the db
+	const existingFinancialParticular = await FinancialParticular.findOne({
+		project: req.body.project,
+	});
+
+	if (existingFinancialParticular) {
+		await FinancialParticular.findByIdAndUpdate(
+			existingFinancialParticular._id,
+			req.body
+		);
+		res.status(200).json({ success: true, msg: 'financialParticular Updated' });
+	} else {
+		const newFinancialParticular = new FinancialParticular(req.body);
+		await newFinancialParticular.save();
+		res.status(200).json({ success: true, msg: 'financialParticular Added' });
+	}
 });
 
 //@desc Get specific project's financialParticulars
 //@route GET /api/v1/financialParticular/
 //@access private
 exports.getFinancialParticulars = asyncHandler(async (req, res, next) => {
-	const project = req.params.id;
+	const project = req.defaultProject;
 
-	const financialParticulars = await FinancialParticular.find({ project });
+	const financialParticulars = await FinancialParticular.findOne({ project });
 
-	if (financialParticulars.length === 0) {
+	if (!financialParticulars) {
 		return next(
 			new ErrorResponse(
 				'This project does not have any financialParticulars',
