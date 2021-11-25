@@ -13,9 +13,10 @@ const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
 const { getDefaultProject } = require('../middleware/getDefaultProject');
 
-router.route('/').post(protect, getDefaultProject, addContractParticular);
-
-router.route('/projectID/:id').get(protect, getContractParticulars);
+router
+	.route('/')
+	.post(protect, getDefaultProject, addContractParticular)
+	.get(protect, getDefaultProject, getContractParticulars);
 
 router
 	.route('/:id')

@@ -41,9 +41,9 @@ exports.addContractParticular = asyncHandler(async (req, res, next) => {
 //@route GET /api/v1/contractParticular/
 //@access private
 exports.getContractParticulars = asyncHandler(async (req, res, next) => {
-	const project = req.params.id;
+	const project = req.defaultProject;
 
-	const contractParticulars = await ContractParticular.find({ project });
+	const contractParticulars = await ContractParticular.findOne({ project });
 
 	if (contractParticulars.length === 0) {
 		return next(

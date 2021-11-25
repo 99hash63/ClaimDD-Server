@@ -30,7 +30,7 @@ const contractParticularSchema = new mongoose.Schema({
 		type: Number,
 	},
 	claimCause: {
-		type: [String],
+		type: String,
 	},
 	projectStatus: {
 		type: String,
