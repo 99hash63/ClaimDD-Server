@@ -25,7 +25,7 @@ exports.addEvent = asyncHandler(async (req, res, next) => {
 //@route GET /api/v1/event/
 //@access private
 exports.getEvents = asyncHandler(async (req, res, next) => {
-	const project = req.params.id;
+	const project = req.defaultProject;
 
 	const events = await Event.find({ project });
 
@@ -41,7 +41,7 @@ exports.getEvents = asyncHandler(async (req, res, next) => {
 });
 
 //@desc Get a single event
-//@route GET /api/v1/event/:id
+//@route GET /api/v1/event/
 //@access public
 exports.getEvent = asyncHandler(async (req, res, next) => {
 	const event = await Event.findById(req.params.id);

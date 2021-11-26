@@ -11,10 +11,12 @@ const {
 const Project = require('../models/Project');
 const advancedResults = require('../middleware/advancedResults');
 const { protect } = require('../middleware/auth');
+const { getDefaultProject } = require('../middleware/getDefaultProject');
 
-router.route('/').post(protect, addEvent);
-
-router.route('/projectID/:id').get(protect, getEvents);
+router
+	.route('/')
+	.post(protect, addEvent)
+	.get(protect, getDefaultProject, getEvents);
 
 router
 	.route('/:id')
