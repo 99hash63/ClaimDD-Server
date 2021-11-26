@@ -10,6 +10,8 @@ const Project = require('../models/Project');
 //@access   private
 exports.addEvent = asyncHandler(async (req, res, next) => {
 	//verifying that claimant exists in the db
+	req.body.project = req.defaultProject;
+
 	const project = await Project.findById(req.body.project);
 
 	if (project == null) {

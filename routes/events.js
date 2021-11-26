@@ -15,7 +15,7 @@ const { getDefaultProject } = require('../middleware/getDefaultProject');
 
 router
 	.route('/')
-	.post(protect, addEvent)
+	.post(protect, getDefaultProject, addEvent)
 	.get(protect, getDefaultProject, getEvents);
 
 router
