@@ -28,6 +28,7 @@ const contractParticulars = require('./routes/contractParticulars');
 const financialParticulars = require('./routes/financialParticulars');
 const events = require('./routes/events');
 const defaultData = require('./routes/defaultData');
+const quantum = require('./routes/quantum');
 
 //Body parser
 app.use(express.json());
@@ -55,6 +56,7 @@ app.use('/api/v1/contractParticulars', contractParticulars);
 app.use('/api/v1/financialParticulars', financialParticulars);
 app.use('/api/v1/events', events);
 app.use('/api/v1/defaultData', defaultData);
+app.use('/api/v1/quantum', quantum);
 
 // app.use('/', (req, res) => {
 // 	res.json({ hi: 'bye' });

@@ -6,7 +6,7 @@ const ErrorResponse = require('../utils/errorResponse');
 const Project = require('../models/Project');
 
 //@route    POST /api/v1/event/
-//@desc     Save new movie to the database
+//@desc     Save new event to the database
 //@access   private
 exports.addEvent = asyncHandler(async (req, res, next) => {
 	//verifying that claimant exists in the db
