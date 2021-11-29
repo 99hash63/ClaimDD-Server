@@ -30,6 +30,13 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 			project: '',
 		};
 
+		//start and end dates
+		const startdate = req.body.importStartDate;
+		const endDate = req.body.importEndDate;
+
+		console.log(startdate);
+		console.log(endDate);
+
 		dataObject.slice(1).forEach(async (row) => {
 			// console.log(row[0]);
 			// console.log(row[1]);
@@ -58,7 +65,7 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 				// console.log(index + ' : ' + column);
 				dateAndValueObj.value = parseInt(column);
 
-				console.log(dateAndValueObj);
+				// console.log(dateAndValueObj);
 				qrmaRecord.dateAndValue.push(dateAndValueObj);
 
 				index++;
