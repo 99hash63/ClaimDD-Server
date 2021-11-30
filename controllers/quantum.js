@@ -31,16 +31,16 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 		};
 
 		//import month
-		// const startdate = new Date(req.body.importStartDate) + 1;
-		// const endDate = new Date(req.body.importEndDate) + 1;
 		const importMonth = req.body.importMonth;
+		//split year and month from importMonth
+		const yearMonthArray = importMonth.split('-');
+		const selectedYear = parseInt(yearMonthArray[0]);
+		const selectedMonth = parseInt(yearMonthArray[1]);
 
-		// console.log(startdate);
-		// console.log(endDate);
+		// console.log(selectedYear);
+		// console.log(selectedMonth);
 
 		dataObject.slice(1).forEach(async (row) => {
-			// console.log(row[0]);
-			// console.log(row[1]);
 			qrmaRecord.resourceId = row[0];
 			qrmaRecord.resourceName = row[1];
 			qrmaRecord.project = req.defaultProject;
@@ -48,13 +48,9 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 
 			let index = 0;
 			row.slice(2).forEach((column) => {
-				// const indexOfNull = row.indexOf(null);
-				// console.log(indexOfNull);
-
 				if (column == null) {
 					column = 0;
 				}
-
 				//creating date value object
 				const dateAndValueObj = {
 					date: '',
@@ -64,15 +60,12 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 				let jsDate = new Date(dataObject[0][index + 2]);
 
 				const date = jsDate.toLocaleString();
-				const month = jsDate.toLocaleString('default', { month: 'long' });
-				//converted js date
-				// jsDate.setDate(jsDate.getDate());
-				//month of converted date
-				// let month = jsDate.getMonth();
-				console.log(date);
-				console.log(month);
-				console.log(importMonth);
-				if (month == importMonth) {
+				const month = jsDate.toLocaleString('default', { month: 'numeric' });
+				const year = jsDate.toLocaleString('default', { year: 'numeric' });
+
+				// console.log(year);
+				// console.log(month);
+				if (month == selectedMonth && year == selectedYear) {
 					//parsing data for date and month obj
 					dateAndValueObj.date = jsDate;
 					dateAndValueObj.value = parseInt(column);
