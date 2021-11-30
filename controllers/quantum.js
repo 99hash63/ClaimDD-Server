@@ -30,12 +30,13 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 			project: '',
 		};
 
-		//start and end dates
-		const startdate = req.body.importStartDate;
-		const endDate = req.body.importEndDate;
+		//import month
+		// const startdate = new Date(req.body.importStartDate) + 1;
+		// const endDate = new Date(req.body.importEndDate) + 1;
+		const importMonth = req.body.importMonth;
 
-		console.log(startdate);
-		console.log(endDate);
+		// console.log(startdate);
+		// console.log(endDate);
 
 		dataObject.slice(1).forEach(async (row) => {
 			// console.log(row[0]);
@@ -50,7 +51,6 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 				// const indexOfNull = row.indexOf(null);
 				// console.log(indexOfNull);
 
-				//converting all null values to 0
 				if (column == null) {
 					column = 0;
 				}
@@ -60,13 +60,26 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 					date: '',
 					value: 0,
 				};
-				// console.log(index + ' : ' + dataObject[0][index + 2]);
-				dateAndValueObj.date = dataObject[0][index + 2];
-				// console.log(index + ' : ' + column);
-				dateAndValueObj.value = parseInt(column);
+				// fetching date and convertong to js date
+				let jsDate = new Date(dataObject[0][index + 2]);
 
-				// console.log(dateAndValueObj);
-				qrmaRecord.dateAndValue.push(dateAndValueObj);
+				const date = jsDate.toLocaleString();
+				const month = jsDate.toLocaleString('default', { month: 'long' });
+				//converted js date
+				// jsDate.setDate(jsDate.getDate());
+				//month of converted date
+				// let month = jsDate.getMonth();
+				console.log(date);
+				console.log(month);
+				console.log(importMonth);
+				if (month == importMonth) {
+					//parsing data for date and month obj
+					dateAndValueObj.date = jsDate;
+					dateAndValueObj.value = parseInt(column);
+
+					// console.log(dateAndValueObj);
+					qrmaRecord.dateAndValue.push(dateAndValueObj);
+				}
 
 				index++;
 			});
