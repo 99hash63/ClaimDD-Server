@@ -73,20 +73,33 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 
 				index++;
 			});
+			// console.log(selectedMonth);
 
 			// checking if a record with this resource id already exists in db
 			const savedQuantum = await QuantumResourcesManpowerAdmin.findOne({
 				resourceId: qrmaRecord.resourceId,
 			});
-			console.log(qrmaRecord.resourceId);
-			console.log(savedQuantum);
+			// console.log(qrmaRecord.resourceId);
+			// console.log(savedQuantum);
 
-			// update existing record
+			// if record for resource id exists
 			if (savedQuantum) {
-				await QuantumResourcesManpowerAdmin.findByIdAndUpdate(
-					{ _id: savedQuantum._id },
-					{ $push: { dateAndValue: qrmaRecord.dateAndValue } }
-				);
+				//checking if data is stored for this month
+				if (
+					savedQuantum.dateAndValue.some(
+						(d) =>
+							d.date.getTime() === qrmaRecord.dateAndValue[0].date.getTime()
+					)
+				) {
+					//if data already includes for this month
+					console.log('data includes already for this month');
+				} else {
+					//if this month data is not included update date and values array
+					await QuantumResourcesManpowerAdmin.findByIdAndUpdate(
+						{ _id: savedQuantum._id },
+						{ $push: { dateAndValue: qrmaRecord.dateAndValue } }
+					);
+				}
 			} else {
 				//save new record to db
 				const newQuantum = new QuantumResourcesManpowerAdmin(qrmaRecord);
