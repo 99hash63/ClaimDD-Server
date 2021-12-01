@@ -62,12 +62,12 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 				const date = jsDate.toLocaleString();
 				const month = jsDate.toLocaleString('default', { month: 'numeric' });
 				const year = jsDate.toLocaleString('default', { year: 'numeric' });
+				0;
 
 				if (month == selectedMonth && year == selectedYear) {
 					//parsing data for date and month obj
 					dateAndValueObj.date = jsDate;
 					dateAndValueObj.value = parseInt(column);
-
 					qrmaRecord.dateAndValue.push(dateAndValueObj);
 				}
 
@@ -91,8 +91,33 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 							d.date.getTime() === qrmaRecord.dateAndValue[0].date.getTime()
 					)
 				) {
+					const startDate = qrmaRecord.dateAndValue[0].date.getTime();
+					const endDate =
+						qrmaRecord.dateAndValue[
+							qrmaRecord.dateAndValue.length - 1
+						].date.getTime();
+
 					//if data already includes for this month
 					console.log('data includes already for this month');
+
+					//delete data of that specific month
+					await QuantumResourcesManpowerAdmin.updateMany(
+						{ resourceId: qrmaRecord.resourceId },
+						{
+							$pull: {
+								dateAndValue: {
+									date: { $gte: startDate, $lte: endDate },
+								},
+							},
+						},
+						{ safe: true, multi: true }
+					);
+
+					//save new record to db
+					await QuantumResourcesManpowerAdmin.findByIdAndUpdate(
+						{ _id: savedQuantum._id },
+						{ $push: { dateAndValue: qrmaRecord.dateAndValue } }
+					);
 				} else {
 					//if this month data is not included update date and values array
 					await QuantumResourcesManpowerAdmin.findByIdAndUpdate(
