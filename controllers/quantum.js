@@ -40,7 +40,7 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 		// console.log(selectedYear);
 		// console.log(selectedMonth);
 
-		dataObject.slice(1).forEach(async (row) => {
+		for (const row of dataObject.slice(1)) {
 			qrmaRecord.resourceId = row[0];
 			qrmaRecord.resourceName = row[1];
 			qrmaRecord.project = req.defaultProject;
@@ -63,28 +63,37 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 				const month = jsDate.toLocaleString('default', { month: 'numeric' });
 				const year = jsDate.toLocaleString('default', { year: 'numeric' });
 
-				// console.log(year);
-				// console.log(month);
 				if (month == selectedMonth && year == selectedYear) {
 					//parsing data for date and month obj
 					dateAndValueObj.date = jsDate;
 					dateAndValueObj.value = parseInt(column);
 
-					// console.log(dateAndValueObj);
 					qrmaRecord.dateAndValue.push(dateAndValueObj);
 				}
 
 				index++;
 			});
 
-			//save to db
-			const newQuantum = await new QuantumResourcesManpowerAdmin(qrmaRecord);
-			await newQuantum.save();
-		});
+			// checking if a record with this resource id already exists in db
+			const savedQuantum = await QuantumResourcesManpowerAdmin.findOne({
+				resourceId: qrmaRecord.resourceId,
+			});
+			console.log(qrmaRecord.resourceId);
+			console.log(savedQuantum);
+
+			// update existing record
+			if (savedQuantum) {
+				await QuantumResourcesManpowerAdmin.findByIdAndUpdate(
+					{ _id: savedQuantum._id },
+					{ $push: { dateAndValue: qrmaRecord.dateAndValue } }
+				);
+			} else {
+				//save new record to db
+				const newQuantum = new QuantumResourcesManpowerAdmin(qrmaRecord);
+				await newQuantum.save();
+			}
+		}
 
 		res.status(200).json({ success: true, msg: 'data recieved' });
-		// const newQuantum = new QuantumResourcesManpowerAdmin(req.body);
-		// await newQuantum.save();
-		// res.status(200).json({ success: true, msg: 'quantum row Added' });
 	}
 );
