@@ -57,6 +57,7 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 					value: 0,
 				};
 				// fetching date and convertong to js date
+				console.log(dataObject[0][index + 2]);
 				let jsDate = new Date(dataObject[0][index + 2]);
 
 				const date = jsDate.toLocaleString();
@@ -133,5 +134,51 @@ exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 		}
 
 		res.status(200).json({ success: true, msg: 'data recieved' });
+	}
+);
+
+//@route    GET /api/v1/quantum/resourcesManpowerAdmin
+//@desc     get quantum resource manpowe admin from the database
+//@access   private
+exports.getQuantumResourcesManpowerAdmin = asyncHandler(
+	async (req, res, next) => {
+		//getiting variables
+		const startDate = new Date(req.body.startDate);
+		const endDate = new Date(req.body.endDate);
+		req.body.project = req.defaultProject;
+
+		console.log(startDate);
+		console.log(endDate);
+
+		const data = await QuantumResourcesManpowerAdmin.aggregate([
+			{ $match: { project: req.body.project } },
+			{
+				$project: {
+					dateAndValue: {
+						$filter: {
+							input: '$dateAndValue',
+							as: 'dateAndValue',
+							cond: {
+								$and: [
+									{ $gte: ['$$dateAndValue.date', startDate] },
+									{ $lte: ['$$dateAndValue.date', endDate] },
+								],
+							},
+						},
+					},
+				},
+			},
+		]);
+
+		// const data = await QuantumResourcesManpowerAdmin.find(
+		// 	{ project: req.body.project },
+		// 	{
+		// 		dateAndValue: {
+		// 			$elemMatch: { date: { $gte: startDate, $lte: endDate } },
+		// 		},
+		// 	}
+		// );
+
+		res.status(200).json({ success: true, data });
 	}
 );
