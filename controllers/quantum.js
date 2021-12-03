@@ -166,6 +166,8 @@ exports.getQuantumResourcesManpowerAdmin = asyncHandler(
 							},
 						},
 					},
+					resourceId: 1,
+					resourceName: 1,
 				},
 			},
 		]);
