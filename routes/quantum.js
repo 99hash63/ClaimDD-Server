@@ -8,6 +8,8 @@ const { getDefaultProject } = require('../middleware/getDefaultProject');
 const {
 	addQuantumResourcesManpowerAdmin,
 	getQuantumResourcesManpowerAdmin,
+	addSingleQuantumResourcesManpowerAdmin,
+	deleteQuantumResourcesManpowerAdmin,
 } = require('../controllers/quantum');
 
 router
@@ -16,6 +18,12 @@ router
 router
 	.route('/resourcesManpowerAdmin/get')
 	.post(protect, getDefaultProject, getQuantumResourcesManpowerAdmin);
+router
+	.route('/resourcesManpowerAdmin/addSingle')
+	.post(protect, getDefaultProject, addSingleQuantumResourcesManpowerAdmin);
+router
+	.route('/resourcesManpowerAdmin/delete')
+	.post(protect, getDefaultProject, deleteQuantumResourcesManpowerAdmin);
 
 // .get(protect, getDefaultProject, getEvents);
 

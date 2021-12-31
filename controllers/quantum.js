@@ -7,7 +7,7 @@ const Project = require('../models/Project');
 const QuantumResourcesManpowerAdmin = require('../models/QuantumResourcesManpowerAdmin');
 
 //@route    POST /api/v1/quantum/resourcesManpowerAdmin
-//@desc     Save new resource manpowe admin to the database
+//@desc     Save new resource manpower admin to the database
 //@access   private
 exports.addQuantumResourcesManpowerAdmin = asyncHandler(
 	async (req, res, next) => {
@@ -182,5 +182,109 @@ exports.getQuantumResourcesManpowerAdmin = asyncHandler(
 		// );
 
 		res.status(200).json({ success: true, data });
+	}
+);
+
+//@route    GET /api/v1/quantum/resourcesManpowerAdmin/addSingle
+//@desc    add single quantum resource manpowe admin from the database
+//@access   private
+exports.addSingleQuantumResourcesManpowerAdmin = asyncHandler(
+	async (req, res, next) => {
+		//verifying that project exists in the db
+		req.body.project = req.defaultProject;
+
+		const project = await Project.findById(req.body.project);
+
+		if (project == null) {
+			return next(new ErrorResponse('This project does not exists!', 400));
+		}
+
+		let { resourceId, date, value } = req.body;
+		date = new Date(date);
+
+		let dateAndValue = { date, value };
+
+		const savedQuantum = await QuantumResourcesManpowerAdmin.findOne({
+			resourceId,
+			project,
+		});
+
+		if (!savedQuantum) {
+			return res.status(500).json({ msg: 'Resource id does not exist!' });
+		}
+
+		//checking if data is stored for this particular day
+		if (
+			savedQuantum.dateAndValue.some((d) => d.date.getTime() === date.getTime())
+		) {
+			//if data already includes for this month
+			console.log('data includes already for this day');
+
+			//update
+			await QuantumResourcesManpowerAdmin.update(
+				{ project, resourceId, 'dateAndValue.date': date },
+				{
+					$set: {
+						'dateAndValue.$.value': value,
+					},
+				}
+			);
+		} else {
+			//if this data is not for this date included update date and values array
+			await QuantumResourcesManpowerAdmin.findByIdAndUpdate(
+				{ _id: savedQuantum._id },
+				{ $push: { dateAndValue } }
+			);
+		}
+
+		res.status(200).json({ success: true, savedQuantum });
+	}
+);
+
+//@route   GET /api/v1/quantum/resourcesManpowerAdmin/deleteSingle
+//@desc    delete single quantum resource manpowe admin from the database
+//@access  private
+exports.deleteQuantumResourcesManpowerAdmin = asyncHandler(
+	async (req, res, next) => {
+		//verifying that project exists in the db
+		req.body.project = req.defaultProject;
+
+		const project = await Project.findById(req.body.project);
+
+		if (project == null) {
+			return next(new ErrorResponse('This project does not exists!', 400));
+		}
+
+		const resourceId = req.body.resourceId;
+		const startDate = new Date(req.body.startDate);
+		const endDate = new Date(req.body.endDate);
+
+		const savedQuantum = await QuantumResourcesManpowerAdmin.findOne({
+			resourceId,
+			project,
+		});
+
+		if (!savedQuantum) {
+			return res.status(500).json({ msg: 'Resource id does not exist!' });
+		}
+
+		console.log(startDate);
+		console.log(endDate);
+
+		//delete data of that specific data period (set val to 0)
+		await QuantumResourcesManpowerAdmin.updateMany(
+			{
+				project,
+				resourceId,
+				'dateAndValue.date': { $gte: startDate, $lte: endDate },
+			},
+			{
+				$set: {
+					'dateAndValue.$[].value': 0,
+				},
+			},
+			{ upsert: true }
+		);
+		res.status(200).json({ success: true });
 	}
 );
